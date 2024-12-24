@@ -1,4 +1,3 @@
-INSERT INTO dwh.load_dates_craftsman_report_datamart(load_dttm)
-SELECT NOW() FROM dwh.craftsman_report_datamart AS rp
-WHERE EXISTS (SELECT 1 FROM dwh.load_dates_craftsman_report_datamart AS ld WHERE rp.craftsman_id not in 
-	(SELECT id FROM dwh.load_dates_craftsman_report_datamart));
+SELECT craft.load_dttm 
+FROM dwh.d_craftsmans as craft
+WHERE not EXISTS (SELECT 1 FROM dwh.load_dates_craftsman_report_datamart AS ld WHERE craft.craftsman_id = ld.id);
