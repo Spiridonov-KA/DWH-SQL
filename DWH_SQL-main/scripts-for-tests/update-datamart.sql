@@ -25,7 +25,7 @@ INSERT INTO dwh.craftsman_report_datamart (craftsman_id, craftsman_name, craftsm
 		craftsman_email, craftsman_money, platform_money, count_order, avg_price_order,
 		avg_age_customer, median_time_order_completed, top_product_category, count_order_created,
 		count_order_in_progress, count_order_delivery, count_order_done, count_order_not_done, report_period)
-SELECT dwh.d_craftsmans.craftsman_id,  dwh.d_craftsmans.craftsman_name, dwh.d_craftsmans.craftsman_address, 
+SELECT dwh.d_craftsmans.craftsman_id, dwh.d_craftsmans.craftsman_name, dwh.d_craftsmans.craftsman_address, 
 	dwh.d_craftsmans.craftsman_birthday, dwh.d_craftsmans.craftsman_email, 
 	ROUND(SUM(dwh.d_products.product_price) * 0.9, 2) AS earned,
 	ROUND(SUM(dwh.d_products.product_price) * 0.1, 2) AS tax,
@@ -49,11 +49,12 @@ SELECT dwh.d_craftsmans.craftsman_id,  dwh.d_craftsmans.craftsman_name, dwh.d_cr
 	COUNT(CASE WHEN dwh.f_orders.order_status = 'done' THEN 1 END) AS count_order_done,
 	COUNT(CASE WHEN dwh.f_orders.order_status <> 'done' THEN 1 END) AS count_order_not_done,
 	TO_CHAR(DATE_TRUNC('month', dwh.f_orders.order_created_date), 'YYYY-MM') AS report_period
-FROM
-	dwh.f_orders
-	JOIN dwh.d_craftsmans ON dwh.d_craftsmans.craftsman_id = dwh.f_orders.craftsman_id
-	JOIN dwh.d_customers ON dwh.d_customers.customer_id = dwh.f_orders.customer_id
-	JOIN dwh.d_products ON dwh.d_products.product_id = dwh.f_orders.product_id 
+from
+	dwh.d_craftsmans 
+	left join dwh.f_orders ON dwh.d_craftsmans.craftsman_id = dwh.f_orders.craftsman_id
+	full JOIN dwh.d_customers ON dwh.d_customers.customer_id = dwh.f_orders.customer_id
+	full JOIN dwh.d_products ON dwh.d_products.product_id = dwh.f_orders.product_id
+	full join dwh.craftsman_report_datamart as tmp on tmp.craftsman_id = dwh.d_craftsmans.craftsman_id 
 WHERE
 	dwh.d_craftsmans.craftsman_id NOT IN (SELECT craftsman_id FROM dwh.craftsman_report_datamart GROUP BY craftsman_id)
 GROUP BY

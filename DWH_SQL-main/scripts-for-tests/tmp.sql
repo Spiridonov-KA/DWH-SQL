@@ -33,7 +33,7 @@ WHERE
 		src.customer_id <> dwh.f_orders.customer_id_in_source OR
 		src.order_created_date <> dwh.f_orders.order_created_date OR
 		src.order_completion_date <> dwh.f_orders.order_completion_date OR
-		src.order_status <> dwh.f_orders.order_status
+		src.order_	status <> dwh.f_orders.order_status
 	);
 	
 
